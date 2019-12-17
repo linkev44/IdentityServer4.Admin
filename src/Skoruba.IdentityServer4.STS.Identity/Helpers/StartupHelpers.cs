@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SendGrid;
@@ -43,11 +44,11 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
 
             services.TryAddTransient(typeof(IGenericControllerLocalizer<>), typeof(GenericControllerLocalizer<>));
 
-            services.AddMvc(o =>
-                {
-                    o.Conventions.Add(new GenericControllerRouteConvention());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddControllersWithViews(o =>
+            {
+                o.Conventions.Add(new GenericControllerRouteConvention());
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddViewLocalization(
                     LanguageViewLocationExpanderFormat.Suffix,
                     opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
@@ -56,6 +57,8 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
                 {
                     m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider<TUser, TKey>());
                 });
+
+            services.AddRazorPages();
 
             services.Configure<RequestLocalizationOptions>(
                 opts =>
@@ -129,7 +132,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
         /// <param name="hostingEnvironment"></param>
         /// <param name="configuration"></param>
         /// <param name="logger"></param>
-        public static void AddAuthenticationServices<TConfigurationDbContext, TPersistedGrantDbContext, TIdentityDbContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services, IHostingEnvironment hostingEnvironment, IConfiguration configuration, ILogger logger)
+        public static void AddAuthenticationServices<TConfigurationDbContext, TPersistedGrantDbContext, TIdentityDbContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services, IWebHostEnvironment hostingEnvironment, IConfiguration configuration, ILogger logger)
             where TPersistedGrantDbContext : DbContext, IPersistedGrantDbContext
             where TConfigurationDbContext : DbContext, IConfigurationDbContext
             where TIdentityDbContext : DbContext
@@ -229,7 +232,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
         /// <param name="hostingEnvironment"></param>
         private static void AddIdentityServer<TConfigurationDbContext, TPersistedGrantDbContext, TUserIdentity>(
             IServiceCollection services,
-            IConfiguration configuration, ILogger logger, IHostingEnvironment hostingEnvironment)
+            IConfiguration configuration, ILogger logger, IWebHostEnvironment hostingEnvironment)
             where TUserIdentity : class
             where TPersistedGrantDbContext : DbContext, IPersistedGrantDbContext
             where TConfigurationDbContext : DbContext, IConfigurationDbContext
@@ -277,10 +280,10 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
         /// <param name="configuration"></param>
         /// <param name="hostingEnvironment"></param>
         public static void AddIdentityDbContext<TContext>(this IServiceCollection services,
-            IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+            IConfiguration configuration, IWebHostEnvironment hostingEnvironment)
             where TContext : DbContext
         {
-            if (hostingEnvironment.IsStaging())
+            if (hostingEnvironment.EnvironmentName == Environments.Staging)
             {
                 RegisterIdentityDbContextStaging<TContext>(services);
             }
@@ -327,7 +330,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
         /// <param name="hostingEnvironment"></param>
         public static IIdentityServerBuilder AddIdentityServerStoresWithDbContexts<TConfigurationDbContext,
             TPersistedGrantDbContext>(this IIdentityServerBuilder builder, IConfiguration configuration,
-            IHostingEnvironment hostingEnvironment)
+            IWebHostEnvironment hostingEnvironment)
             where TPersistedGrantDbContext : DbContext, IPersistedGrantDbContext
             where TConfigurationDbContext : DbContext, IConfigurationDbContext
         {

@@ -55,7 +55,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleAsync();
 
                 //Assert new api resource
-                newApiResource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
+                newApiResource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
             }
         }
 
@@ -76,11 +76,11 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiResource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
                 //Assert new api resource
-                newApiResource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id).Excluding(o => o.Secrets)
+                newApiResource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id).Excluding(o => o.Secrets)
                     .Excluding(o => o.Scopes)
                     .Excluding(o => o.UserClaims));
 
-                newApiResource.UserClaims.ShouldBeEquivalentTo(apiResource.UserClaims,
+                newApiResource.UserClaims.Should().BeEquivalentTo(apiResource.UserClaims,
                     option => option.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
                         .Excluding(x => x.SelectedMemberPath.EndsWith("ApiResource")));
             }
@@ -103,7 +103,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleAsync();
 
                 //Assert new api resource
-                newApiResource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
+                newApiResource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
 
                 //Delete api resource
                 await apiResourceRepository.DeleteApiResourceAsync(newApiResource);
@@ -133,7 +133,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
 
                 //Assert new api resource
-                newApiResource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
+                newApiResource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
 
                 //Detached the added item
                 context.Entry(newApiResource).State = EntityState.Detached;
@@ -148,7 +148,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var updatedApiResourceEntity = await context.ApiResources.Where(x => x.Id == updatedApiResource.Id).SingleAsync();
 
                 //Assert updated api resource
-                updatedApiResource.ShouldBeEquivalentTo(updatedApiResourceEntity);
+                updatedApiResource.Should().BeEquivalentTo(updatedApiResourceEntity);
             }
         }
 
@@ -175,7 +175,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiScopes = await context.ApiScopes.Where(x => x.Id == apiScope.Id).SingleAsync();
 
                 //Assert new api scope
-                newApiScopes.ShouldBeEquivalentTo(apiScope, options => options.Excluding(o => o.Id));
+                newApiScopes.Should().BeEquivalentTo(apiScope, options => options.Excluding(o => o.Id));
             }
         }
 
@@ -196,7 +196,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiResource = await context.ApiResources.Where(x => x.Id == apiResource.Id).SingleOrDefaultAsync();
 
                 //Assert new api resource
-                newApiResource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
+                newApiResource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id));
 
                 //Detached the added item
                 context.Entry(newApiResource).State = EntityState.Detached;
@@ -220,7 +220,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var updatedApiScopeEntity = await context.ApiScopes.Where(x => x.Id == updatedApiScope.Id).SingleAsync();
 
                 //Assert updated api scope
-                updatedApiScope.ShouldBeEquivalentTo(updatedApiScopeEntity);
+                updatedApiScope.Should().BeEquivalentTo(updatedApiScopeEntity);
             }
         }
 
@@ -247,7 +247,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiScopes = await context.ApiScopes.Where(x => x.Id == apiScope.Id).SingleOrDefaultAsync();
 
                 //Assert new api resource
-                newApiScopes.ShouldBeEquivalentTo(apiScope, options => options.Excluding(o => o.Id));
+                newApiScopes.Should().BeEquivalentTo(apiScope, options => options.Excluding(o => o.Id));
 
                 //Try delete it
                 await apiResourceRepository.DeleteApiScopeAsync(newApiScopes);
@@ -283,13 +283,13 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiScopes = await apiResourceRepository.GetApiScopeAsync(apiResource.Id, apiScope.Id);
 
                 //Assert new api resource
-                newApiScopes.ShouldBeEquivalentTo(apiScope, options => options.Excluding(o => o.Id)
+                newApiScopes.Should().BeEquivalentTo(apiScope, options => options.Excluding(o => o.Id)
                     .Excluding(o => o.UserClaims)
                     .Excluding(o => o.ApiResource.Secrets)
                     .Excluding(o => o.ApiResource.UserClaims)
                     .Excluding(o => o.ApiResource.Scopes));
 
-                newApiScopes.UserClaims.ShouldBeEquivalentTo(apiScope.UserClaims,
+                newApiScopes.UserClaims.Should().BeEquivalentTo(apiScope.UserClaims,
                     option => option.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
                         .Excluding(x => x.SelectedMemberPath.EndsWith("ApiScope")));
             }
@@ -318,7 +318,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiSecret = await context.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleAsync();
 
                 //Assert new api secret
-                newApiSecret.ShouldBeEquivalentTo(apiSecret, options => options.Excluding(o => o.Id));
+                newApiSecret.Should().BeEquivalentTo(apiSecret, options => options.Excluding(o => o.Id));
             }
         }
 
@@ -345,7 +345,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiSecret = await context.ApiSecrets.Where(x => x.Id == apiSecret.Id).SingleOrDefaultAsync();
 
                 //Assert new api resource
-                newApiSecret.ShouldBeEquivalentTo(apiSecret, options => options.Excluding(o => o.Id));
+                newApiSecret.Should().BeEquivalentTo(apiSecret, options => options.Excluding(o => o.Id));
 
                 //Try delete it
                 await apiResourceRepository.DeleteApiSecretAsync(newApiSecret);
@@ -381,7 +381,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var newApiSecret = await apiResourceRepository.GetApiSecretAsync(apiSecret.Id);
 
                 //Assert new api secret
-                newApiSecret.ShouldBeEquivalentTo(apiSecret, options => options.Excluding(o => o.Id)
+                newApiSecret.Should().BeEquivalentTo(apiSecret, options => options.Excluding(o => o.Id)
                     .Excluding(o => o.ApiResource.Secrets)
                     .Excluding(o => o.ApiResource.UserClaims)
                     .Excluding(o => o.ApiResource.Scopes));
@@ -405,12 +405,12 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
                 //Assert new api resource
-                resource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id)
+                resource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id)
                     .Excluding(o => o.Secrets)
                     .Excluding(o => o.Scopes)
                     .Excluding(o => o.UserClaims));
 
-                resource.UserClaims.ShouldBeEquivalentTo(apiResource.UserClaims,
+                resource.UserClaims.Should().BeEquivalentTo(apiResource.UserClaims,
                     option => option.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
                         .Excluding(x => x.SelectedMemberPath.EndsWith("ApiResource")));
 
@@ -424,7 +424,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var resourceProperty = await context.ApiResourceProperties.Where(x => x.Id == apiResourceProperty.Id)
                     .SingleOrDefaultAsync();
 
-                resourceProperty.ShouldBeEquivalentTo(apiResourceProperty,
+                resourceProperty.Should().BeEquivalentTo(apiResourceProperty,
                     options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
             }
         }
@@ -446,12 +446,12 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
                 //Assert new api resource
-                resource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id)
+                resource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id)
                     .Excluding(o => o.Secrets)
                     .Excluding(o => o.Scopes)
                     .Excluding(o => o.UserClaims));
 
-                resource.UserClaims.ShouldBeEquivalentTo(apiResource.UserClaims,
+                resource.UserClaims.Should().BeEquivalentTo(apiResource.UserClaims,
                     option => option.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
                         .Excluding(x => x.SelectedMemberPath.EndsWith("ApiResource")));
 
@@ -466,7 +466,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                     .SingleOrDefaultAsync();
 
                 //Assert
-                property.ShouldBeEquivalentTo(apiResourceProperty,
+                property.Should().BeEquivalentTo(apiResourceProperty,
                     options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
 
                 //Try delete it
@@ -498,12 +498,12 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 var resource = await apiResourceRepository.GetApiResourceAsync(apiResource.Id);
 
                 //Assert new api resource
-                resource.ShouldBeEquivalentTo(apiResource, options => options.Excluding(o => o.Id)
+                resource.Should().BeEquivalentTo(apiResource, options => options.Excluding(o => o.Id)
                     .Excluding(o => o.Secrets)
                     .Excluding(o => o.Scopes)
                     .Excluding(o => o.UserClaims));
 
-                resource.UserClaims.ShouldBeEquivalentTo(apiResource.UserClaims,
+                resource.UserClaims.Should().BeEquivalentTo(apiResource.UserClaims,
                     option => option.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
                         .Excluding(x => x.SelectedMemberPath.EndsWith("ApiResource")));
 
@@ -516,7 +516,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Repositories
                 //Get new api resource property
                 var resourceProperty = await apiResourceRepository.GetApiResourcePropertyAsync(apiResourceProperty.Id);
 
-                resourceProperty.ShouldBeEquivalentTo(apiResourceProperty,
+                resourceProperty.Should().BeEquivalentTo(apiResourceProperty,
                     options => options.Excluding(o => o.Id).Excluding(x => x.ApiResource));
             }
         }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Skoruba.IdentityServer4.Admin.Api.Configuration;
 using Skoruba.IdentityServer4.Admin.Api.Configuration.Authorization;
 using Skoruba.IdentityServer4.Admin.Api.Configuration.Constants;
@@ -19,7 +21,7 @@ namespace Skoruba.IdentityServer4.Admin.Api
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -39,7 +41,7 @@ namespace Skoruba.IdentityServer4.Admin.Api
 
         public IConfiguration Configuration { get; }
 
-        public IHostingEnvironment HostingEnvironment { get; }
+        public IWebHostEnvironment HostingEnvironment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -75,27 +77,78 @@ namespace Skoruba.IdentityServer4.Admin.Api
 
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc(ApiConfigurationConsts.ApiVersionV1, new Info { Title = ApiConfigurationConsts.ApiName, Version = ApiConfigurationConsts.ApiVersionV1 });
+                options.SwaggerDoc(ApiConfigurationConsts.ApiVersionV1, new OpenApiInfo { Title = ApiConfigurationConsts.ApiName, Version = ApiConfigurationConsts.ApiVersionV1 });
 
-                options.AddSecurityDefinition("oauth2", new OAuth2Scheme
+              
+                options.AddSecurityDefinition("OAuth2", new OpenApiSecurityScheme
                 {
-                    Flow = "implicit",
-                    AuthorizationUrl = $"{adminApiConfiguration.IdentityServerBaseUrl}/connect/authorize",
-                    Scopes = new Dictionary<string, string> {
-                        { adminApiConfiguration.OidcApiName, ApiConfigurationConsts.ApiName }
+                    Description = "test",
+                    Name = "Authorization",
+                    ///  In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.OAuth2,
+                    Scheme = "oauth2",
+                    Flows = new OpenApiOAuthFlows()
+                    {
+                        Implicit = new OpenApiOAuthFlow()
+                        {
+                            AuthorizationUrl = new Uri($"{adminApiConfiguration.IdentityServerBaseUrl}/connect/authorize"),
+                            // TokenUrl = new Uri("<token url here>"),
+                            Scopes = new Dictionary<string, string> {
+                                        { adminApiConfiguration.OidcApiName, ApiConfigurationConsts.ApiName }
+                                    }
+                        }
                     }
                 });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "OAuth2"
+                            },
+                            Scheme = "oauth2",
+                            Name = "OAuth2",
+                           // In = ParameterLocation.Header,
+                          Flows = new OpenApiOAuthFlows() {
+                                    Implicit = new OpenApiOAuthFlow()
+                                    {
+                                        AuthorizationUrl = new Uri($"{adminApiConfiguration.IdentityServerBaseUrl}/connect/authorize"),
+                                       // TokenUrl = new Uri("<token url here>"),
+                                        Scopes = new Dictionary<string, string> {
+                                        { adminApiConfiguration.OidcApiName, ApiConfigurationConsts.ApiName }
+                                    }
+                                    }
+                                },
+
+                        },
+                        new List<string>()
+                    }
+                });
+                //options.AddSecurityDefinition("oauth2", new OAuth2Scheme
+                //{
+                //    Flow = "implicit",
+                //    AuthorizationUrl = $"{adminApiConfiguration.IdentityServerBaseUrl}/connect/authorize",
+                //    Scopes = new Dictionary<string, string> {
+                //        { adminApiConfiguration.OidcApiName, ApiConfigurationConsts.ApiName }
+                //    }
+                //});
 
                 options.OperationFilter<AuthorizeCheckOperationFilter>();
             });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, AdminApiConfiguration adminApiConfiguration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, AdminApiConfiguration adminApiConfiguration)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == Environments.Development)
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseRouting();
 
             app.UseAuthentication();
 
@@ -108,7 +161,16 @@ namespace Skoruba.IdentityServer4.Admin.Api
                 c.OAuthAppName(ApiConfigurationConsts.ApiName);
             });
 
-            app.UseMvc();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+            });
         }
     }
 }

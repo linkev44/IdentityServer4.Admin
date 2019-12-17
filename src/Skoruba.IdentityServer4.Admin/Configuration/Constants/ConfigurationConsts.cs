@@ -8,6 +8,8 @@
 
         public const string PersistedGrantDbConnectionStringKey = "PersistedGrantDbConnection";
 
+        public const string InMemoryDbConnectionStringKey = "InMemoryDbConnection";
+
         public const string IdentityDbConnectionStringKey = "IdentityDbConnection";
 
         public const string AdminLogDbConnectionStringKey = "AdminLogDbConnection";

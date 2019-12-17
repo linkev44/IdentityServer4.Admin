@@ -52,12 +52,10 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
             where TRoleClaimsDto : RoleClaimsDto<TRoleDtoKey>
         {
             services.TryAddTransient(typeof(IGenericControllerLocalizer<>), typeof(GenericControllerLocalizer<>));
-
-            services.AddMvc(o =>
-                {
-                    o.Conventions.Add(new GenericControllerRouteConvention());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddControllersWithViews(o =>
+            {
+                o.Conventions.Add(new GenericControllerRouteConvention());
+            })
                 .AddDataAnnotationsLocalization()
                 .ConfigureApplicationPartManager(m =>
                 {
@@ -65,6 +63,7 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
                         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
                         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>());
                 });
+            services.AddRazorPages();
         }
 
 

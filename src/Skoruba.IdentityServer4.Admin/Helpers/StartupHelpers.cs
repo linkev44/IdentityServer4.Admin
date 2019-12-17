@@ -35,6 +35,7 @@ using Skoruba.IdentityServer4.Admin.Configuration.Constants;
 using Skoruba.IdentityServer4.Admin.Configuration.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using Skoruba.IdentityServer4.Admin.Helpers.Localization;
+using Microsoft.Extensions.Hosting;
 
 namespace Skoruba.IdentityServer4.Admin.Helpers
 {
@@ -209,7 +210,7 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
         /// </summary>
         /// <param name="app"></param>
         /// <param name="env"></param>
-        public static void ConfigureAuthenticationServices(this IApplicationBuilder app, IHostingEnvironment env)
+        public static void ConfigureAuthenticationServices(this IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseAuthentication();
 
@@ -249,7 +250,7 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
         /// <param name="services"></param>
         /// <param name="hostingEnvironment"></param>
         /// <param name="configuration"></param>
-        public static void AddDbContexts<TContext>(this IServiceCollection services, IHostingEnvironment hostingEnvironment, IConfigurationRoot configuration)
+        public static void AddDbContexts<TContext>(this IServiceCollection services, IWebHostEnvironment hostingEnvironment, IConfigurationRoot configuration)
         where TContext : DbContext
         {
             if (hostingEnvironment.IsStaging())
@@ -272,7 +273,7 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
         /// <param name="services"></param>
         /// <param name="hostingEnvironment"></param>
         /// <param name="configuration"></param>
-        public static void AddDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext>(this IServiceCollection services, IHostingEnvironment hostingEnvironment, IConfigurationRoot configuration)
+        public static void AddDbContexts<TIdentityDbContext, TConfigurationDbContext, TPersistedGrantDbContext, TLogDbContext>(this IServiceCollection services, IWebHostEnvironment hostingEnvironment, IConfigurationRoot configuration)
             where TIdentityDbContext : DbContext
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
@@ -345,11 +346,10 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
 
             services.TryAddTransient(typeof(IGenericControllerLocalizer<>), typeof(GenericControllerLocalizer<>));
 
-            services.AddMvc(o =>
-                {
-                    o.Conventions.Add(new GenericControllerRouteConvention());
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddControllersWithViews(o =>
+            {
+                o.Conventions.Add(new GenericControllerRouteConvention());
+            })
                 .AddViewLocalization(
                     LanguageViewLocationExpanderFormat.Suffix,
                     opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
@@ -360,6 +360,23 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
                         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
                         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>());
                 });
+            services.AddRazorPages();
+
+            //services.AddMvc(o =>
+            //    {
+            //        o.Conventions.Add(new GenericControllerRouteConvention());
+            //    })
+            //    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            //    .AddViewLocalization(
+            //        LanguageViewLocationExpanderFormat.Suffix,
+            //        opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
+            //    .AddDataAnnotationsLocalization()
+            //    .ConfigureApplicationPartManager(m =>
+            //    {
+            //        m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider<TUserDto, TUserDtoKey, TRoleDto, TRoleDtoKey, TUserKey, TRoleKey, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+            //            TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
+            //            TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto>());
+            //    });
 
             services.Configure<RequestLocalizationOptions>(
             opts =>
@@ -390,7 +407,7 @@ namespace Skoruba.IdentityServer4.Admin.Helpers
         /// <param name="services"></param>
         /// <param name="hostingEnvironment"></param>
         /// <param name="adminConfiguration"></param>
-        public static void AddAuthenticationServices<TContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services, IHostingEnvironment hostingEnvironment, IAdminConfiguration adminConfiguration)
+        public static void AddAuthenticationServices<TContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services, IWebHostEnvironment hostingEnvironment, IAdminConfiguration adminConfiguration)
             where TContext : DbContext where TUserIdentity : class where TUserIdentityRole : class
         {
             services.AddIdentity<TUserIdentity, TUserIdentityRole>(options =>
